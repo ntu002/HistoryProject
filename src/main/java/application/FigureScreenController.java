@@ -1,5 +1,6 @@
 package application;
 
+import application.controller.FigureDetailScreenController;
 import history.historicalfigure.HistoricalFigure;
 import history.historicalfigure.HistoricalFigures;
 import history.relation.Pair;
@@ -38,11 +39,7 @@ public class FigureScreenController {
     private SearchBarController searchBarController;
 
     @FXML
-    private SidebarController sideBarController;
-
-    @FXML
     public void initialize() {
-        HistoricalFigures.loadJSON();
 
         colFigureId.setCellValueFactory(
                 new PropertyValueFactory<HistoricalFigure, Integer>("id"));
@@ -57,12 +54,12 @@ public class FigureScreenController {
         searchBarController.setSearchBoxListener(
                 new SearchBoxListener() {
                     @Override
-                    public void onSearchNameHandler(String name) {
+                    public void handleSearchName(String name) {
                         tblFigure.setItems(HistoricalFigures.collection.searchByName(name));
                     }
 
                     @Override
-                    public void onSearchIdHandler(String id) {
+                    public void handleSearchId(String id) {
                         try {
                             int intId = Integer.parseInt(id);
                             tblFigure.setItems(
@@ -74,7 +71,7 @@ public class FigureScreenController {
                     }
 
                     @Override
-                    public void onBlankHandler() {
+                    public void handleBlank() {
                         tblFigure.setItems(HistoricalFigures.collection.getData());
                     }
                 }
@@ -88,6 +85,8 @@ public class FigureScreenController {
                     try {
                         FXMLLoader loader = new FXMLLoader(App.convertToURL("/application/fxml/FigureDetailScreen.fxml"));
                         Parent root = loader.load();
+                        FigureDetailScreenController controller = loader.getController();
+                        controller.setFigure(figure);
                         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
                         Scene scene = new Scene(root);
                         stage.setScene(scene);
@@ -99,13 +98,5 @@ public class FigureScreenController {
             });
             return row;
         });
-
-//        tblFigure.getSelectionModel().selectedItemProperty().addListener(
-//                (observableValue, oldFigure, newFigure) -> {
-//                    if(newFigure != null) {
-//                        System.out.println(newFigure.toJSON());
-//                    }
-//                }
-//        );
     }
 }

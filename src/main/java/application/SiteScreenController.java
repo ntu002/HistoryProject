@@ -1,18 +1,23 @@
 package application;
 
+import application.controller.SiteDetailScreenController;
 import history.historicsite.HistoricSite;
 import history.historicsite.HistoricSites;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.io.IOException;
 
-public class SiteScreenController implements Initializable {
+public class SiteScreenController {
     @FXML
     private TableView<HistoricSite> siteTable;
 
@@ -31,8 +36,8 @@ public class SiteScreenController implements Initializable {
     @FXML
     private SearchBarController searchBarController;
 
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        HistoricSites.loadJSON();
+    @FXML
+    public void initialize() {
 
         colSiteId.setCellValueFactory(
                 new PropertyValueFactory<HistoricSite, Integer>("id")
@@ -51,12 +56,12 @@ public class SiteScreenController implements Initializable {
         searchBarController.setSearchBoxListener(
                 new SearchBoxListener() {
                     @Override
-                    public void onSearchNameHandler(String name) {
+                    public void handleSearchName(String name) {
                         siteTable.setItems(HistoricSites.collection.searchByName(name));
                     }
 
                     @Override
-                    public void onSearchIdHandler(String id) {
+                    public void handleSearchId(String id) {
                         try {
                             int intId = Integer.parseInt(id);
                             siteTable.setItems(
@@ -68,10 +73,32 @@ public class SiteScreenController implements Initializable {
                     }
 
                     @Override
-                    public void onBlankHandler() {
+                    public void handleBlank() {
                         siteTable.setItems(HistoricSites.collection.getData());
                     }
                 }
         );
+
+        siteTable.setRowFactory(tableView -> {
+            TableRow<HistoricSite> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if(event.getClickCount() == 2 && (!row.isEmpty())){
+                    HistoricSite site = row.getItem();
+                    try {
+                        FXMLLoader loader = new FXMLLoader(App.convertToURL("/application/fxml/SiteDetailScreen.fxml"));
+                        Parent root = loader.load();
+                        SiteDetailScreenController controller = loader.getController();
+                        controller.setHistoricSite(site);
+                        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+                        Scene scene = new Scene(root);
+                        stage.setScene(scene);
+                        stage.show();
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            });
+            return row;
+        });
     }
 }

@@ -1,18 +1,23 @@
 package application;
 
+import application.controller.FesDetailScreenController;
 import history.festival.Festival;
 import history.festival.Festivals;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.io.IOException;
 
-public class FestivalScreenController implements Initializable {
+public class FestivalScreenController {
     @FXML
     private TableView<Festival> fesTable;
 
@@ -31,8 +36,8 @@ public class FestivalScreenController implements Initializable {
     @FXML
     private SearchBarController searchBarController;
 
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        Festivals.loadJSON();
+    @FXML
+    public void initialize() {
 
         colFesId.setCellValueFactory(
                 new PropertyValueFactory<Festival, Integer>("id")
@@ -51,12 +56,12 @@ public class FestivalScreenController implements Initializable {
         searchBarController.setSearchBoxListener(
                 new SearchBoxListener() {
                     @Override
-                    public void onSearchNameHandler(String name) {
+                    public void handleSearchName(String name) {
                         fesTable.setItems(Festivals.collection.searchByName(name));
                     }
 
                     @Override
-                    public void onSearchIdHandler(String id) {
+                    public void handleSearchId(String id) {
                         try {
                             int intId = Integer.parseInt(id);
                             fesTable.setItems(
@@ -68,10 +73,32 @@ public class FestivalScreenController implements Initializable {
                     }
 
                     @Override
-                    public void onBlankHandler() {
+                    public void handleBlank() {
                         fesTable.setItems(Festivals.collection.getData());
                     }
                 }
         );
+
+        fesTable.setRowFactory(tableView -> {
+            TableRow<Festival> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if(event.getClickCount() == 2 && (!row.isEmpty())){
+                    Festival fes = row.getItem();
+                    try {
+                        FXMLLoader loader = new FXMLLoader(App.convertToURL("/application/fxml/FesDetailScreen.fxml"));
+                        Parent root = loader.load();
+                        FesDetailScreenController controller = loader.getController();
+                        controller.setFestival(fes);
+                        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+                        Scene scene = new Scene(root);
+                        stage.setScene(scene);
+                        stage.show();
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+                }
+            });
+            return row;
+        });
     }
 }
