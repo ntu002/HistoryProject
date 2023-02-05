@@ -1,7 +1,6 @@
 package helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import history.model.HistoricalEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +31,12 @@ public class JsonHelper {
 
     /**
      * Chuyển đổi đối tượng thành String JSON
-     * @param entity Đối tượng cần chuyển sang JSON
+     * @param object Đối tượng cần chuyển sang JSON
      * @return String JSON đã biến đổi từ đối tượng
      */
-    public static String stringify(HistoricalEntity entity){
+    public static String stringify(Object object){
         try {
-            return MAPPER.writeValueAsString(entity);
+            return MAPPER.writeValueAsString(object);
         } catch (IOException exception){
             exception.printStackTrace();
             return null;
