@@ -1,7 +1,6 @@
 package application.controller;
 
 import application.App;
-import application.SearchBoxListener;
 import history.event.Event;
 import history.event.Events;
 import javafx.collections.FXCollections;
@@ -87,7 +86,7 @@ public class EventScreenController {
                 if(mouseEvent.getClickCount() == 2 && (!row.isEmpty())){
                     Event event = row.getItem();
                     try {
-                        FXMLLoader loader = new FXMLLoader(App.convertToURL("/application/fxml/EventDetailScreen.fxml"));
+                        FXMLLoader loader = new FXMLLoader(App.convertToURL("/application/view/EventDetailScreen.fxml"));
                         Parent root = loader.load();
                         EventDetailScreenController controller = loader.getController();
                         controller.setEvent(event);

@@ -1,7 +1,6 @@
 package application.controller;
 
 import application.App;
-import application.SearchBoxListener;
 import history.era.Era;
 import history.era.Eras;
 import javafx.collections.FXCollections;
@@ -88,7 +87,7 @@ public class EraScreenController {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Era era = row.getItem();
                     try {
-                        FXMLLoader loader = new FXMLLoader(App.convertToURL("/application/fxml/EraDetailScreen.fxml"));
+                        FXMLLoader loader = new FXMLLoader(App.convertToURL("/application/view/EraDetailScreen.fxml"));
                         Parent root = loader.load();
                         EraDetailScreenController controller = loader.getController();
                         controller.setEra(era);
